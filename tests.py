@@ -23,7 +23,8 @@ class PartyTests(unittest.TestCase):
         """Do users who haven't RSVPed see the correct view?"""
 
         # FIXME: Add a test to show we haven't RSVP'd yet
-        print("FIXME")
+        result = self.client.get("/")
+        self.assertIn(b"Please RSVP", result.data)
 
     def test_rsvp(self):
         """Do RSVPed users see the correct view?"""
@@ -32,6 +33,8 @@ class PartyTests(unittest.TestCase):
 
         result = self.client.post("/rsvp", data=rsvp_info,
                                   follow_redirects=True)
+        self.assertNotIn(b"Please RSVP", result.data)
+        self.assertIn(b"Party Details", result.data)
 
         # FIXME: check that once we log in we see party details--but not the form!
         print("FIXME")
@@ -40,7 +43,14 @@ class PartyTests(unittest.TestCase):
         """Can we keep Mel out?"""
 
         # FIXME: write a test that mel can't invite himself
-        pass
+        rsvp_info = {'name': "mel", 'email': "mel@ubermelon.com"}
+
+        result = self.client.post("/rsvp", data=rsvp_info,
+                                  follow_redirects=True)
+        self.assertIn(b"Please RSVP", result.data)
+        self.assertNotIn(b"Party Details", result.data)
+
+
         print("FIXME")
 
 
